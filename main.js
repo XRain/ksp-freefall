@@ -73,7 +73,7 @@ var flight = {
     },
     setInitialCOnditions: function(timeLimit, startSpeed, startAlt) {
         this._reset();
-        this.time = timeLimit;
+        this.time = 0;
         this.alt = startAlt;
         this.speed = startSpeed;
         this.init.speed = startSpeed;
@@ -90,9 +90,9 @@ var flight = {
                     var altRatio = (this.body.r + this.alt) * (this.body.r + this.alt);
                     this.g = bodies['G'] * (this.body.m / altRatio);
 
-                    this.time = i + Number(j / mpl);
-                    this.speed = this.speed + Number(this.g - this.drag) / mpl;
-                    this.alt = this.alt - this.speed / mpl;
+                    this.time = (this.init.time - i) + Number(j / mpl);
+                    this.speed = this.speed + (Number(this.g - this.drag) / mpl);
+                    this.alt = this.alt - (this.speed / mpl);
 
                 } else {
                     this.status = 'crash';
@@ -102,6 +102,7 @@ var flight = {
             if(i == this.init.time) {
                 this.startG  = this.g;
             }
+            j = 0;
         }
 
         return this._roundResults();
@@ -113,7 +114,7 @@ var flight = {
             startG: Number(this.startG).toFixed(4),
             timeLimit: Number(this.init.time).toFixed(0),
             time: Number(this.time).toFixed(0),
-            alt: Number(this.startG).toFixed(4),
+            alt: Number(this.alt).toFixed(4),
             speed: Number(this.speed).toFixed(4),
             drag: this.drag
         }
