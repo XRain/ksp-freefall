@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link href="main.css" rel="stylesheet">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="main.js"></script>
+	</head>
+	<body>
+		<select id="body">
+			<option value='moho'>Moho (Меркурий)</option>
+			<option value='eve'>Eve (Венера)</option>
+			<option class="child" value='gilly'>--Gilly</option>
+			<option selected="selected" value='kerbin'>Kerbin (Земля)</option>
+			<option class="child" value='mun'>--Mun (Луна)</option>
+			<option class="child" value='minmus'>--Minmus (вторая Луна)</option>
+			<option value='duna'>Duna (Марс)</option>
+			<option class="child" value='ike'>--Ike</option>
+
+		</select><br/>
+		<input placeholder="Стартовая скорость" type="text" id="speed" value=""/><span>м/сек</span><br/>
+		<input placeholder="Высота" type="text" id="alt" value=""/><span>м.</span><br/>
+		<input placeholder="Лимит времени" type="text" id="time" value=""/><span id='time-in-m'>сек.</span><br/>
+		<input placeholder="торможение" type="text" id="drag" value=""/><span>м/сек</span><br/>
+		<button id="ok">Рассчет</button>
+		<p id="flight"></p>
+	</body>
+</html>
