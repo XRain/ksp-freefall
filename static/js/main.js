@@ -2,11 +2,13 @@
 var flight = {
     //perfomance multiplier, higher value is more precise, may affect perfomance
     mpl: 10000,
+    simulation: true,
     // initial flight conditions
     init: {
         'speed': 0,
         'time': 0,
-        'alt': 0
+        'alt': 0,
+        'thrustPercent': 0
     },
     // mutable "realtime" values
     alt: 0,
@@ -15,15 +17,30 @@ var flight = {
     status: '',
     g: 0,
     startG: 0,
-    drag: 0,
     body: {},
-    //ship drag params
+    //ship thrust params
     ship: {
         currentThrust: 0,
         fullShipThrust: 0,
         emptyShipThrust: 0,
         thrustTime: 0, //seconds
-        thrustChangePerSec: 0
+        thrustChangePerSec: 0,
+        timeThrusted: 0,
+        simTimeThrusted: 0,
+        thrustToPercent: function(percent, time) {
+            if (percent > 0 && this.timeThrusted < this.thrustTime) {
+                this.simTimeThrusted += (time / 100) * percent;
+
+                this.currentThrust = this.fullShipThrust + (this.simTimeThrusted * (this.thrustChangePerSec));
+                var actualThrustPerSec = (this.currentThrust / 100) * percent;
+                return actualThrustPerSec / flight.mpl;
+                if(flight.simulation == false) {
+                    this.timeThrusted = this.simTimeThrusted;
+                }
+            } else {
+                return 0
+            }
+        }
     },
     _reset: function() {
         this.status = 'flight';
@@ -32,38 +49,39 @@ var flight = {
         this.time = 0; // s
         this.alt =  0; // m
         this.speed = 0; // m/s
-        this.drag = 0; // m/s
     },
     setBody: function(selectedBody) {
         this.body = selectedBody;
     },
-    setShip: function(params) {
-        this.ship.currentThrust = this.ship.fullShipThrust = options.full;
-        this.ship.emptyShipThrust = options.empty;
-        this.ship.thrustTime = options.time;
-        this.ship.thrustChangePerSec =
+    setShipParams: function(params) {
+        this.ship.currentThrust = Number(params.full);
+        this.ship.fullShipThrust = Number(params.full);
+        this.ship.emptyShipThrust = Number(params.empty);
+        this.ship.thrustTime = Number(params.time);
+        this.ship.simTimeThrusted = this.ship.timeThrusted;
+        this.ship.thrustChangePerSec = (this.ship.emptyShipThrust - this.ship.fullShipThrust) / this.ship.thrustTime;
     },
-    setInitialConditions: function(timeLimit, startSpeed, startAlt) {
+    setInitialConditions: function(params) {
         this._reset();
         this.time = 0;
-        this.alt = startAlt;
-        this.speed = startSpeed;
-        this.init.speed = startSpeed;
-        this.init.time = timeLimit;
-        this.init.alt = startAlt;
+        this.alt = params.startAlt;
+        this.speed = params.startSpeed;
+        this.simulation = params.sim;
+        this.init.speed = params.startSpeed;
+        this.init.time = params.timeLimit;
+        this.init.alt = params.startAlt;
+        this.init.thrustPercent = params.thrustPercent;
     },
-    calculate: function(drag) {
-        this.drag = drag;
-        console.log(this);
-
-        for (var i=this.init.time; i >= 0; i--) {
+    calculate: function() {
+        for (var i=this.init.time; i > 0; i--) {
             for (var j=0; j <= this.mpl; j++) {
                 if(this.alt - this.speed > 0) {
                     var altRatio = (this.body.r + this.alt) * (this.body.r + this.alt);
                     this.g = window.bodies['G'] * (this.body.m / altRatio);
 
                     this.time = (this.init.time - i) + Number(j / this.mpl);
-                    this.speed = this.speed + (Number(this.g - this.drag) / this.mpl);
+                    var shipThrust = this.ship.thrustToPercent(this.init.thrustPercent, 1 / this.mpl);
+                    this.speed = this.speed + Number(this.g / this.mpl - shipThrust);
                     this.alt = this.alt - (this.speed / this.mpl);
 
                 } else {
@@ -77,6 +95,9 @@ var flight = {
             j = 0;
         }
 
+        $('#thrust-spent').val(Number(this.ship.thrustTime - this.ship.simTimeThrusted).toFixed(1));
+        this.simulation = true;
+        this.ship.simTimeThrusted = 0;
         return this._roundResults();
     },
     _roundResults: function() {
@@ -88,25 +109,34 @@ var flight = {
             time: Number(this.time).toFixed(0),
             alt: Number(this.alt).toFixed(4),
             speed: Number(this.speed).toFixed(4),
-            drag: this.drag
+            drag: Number(this.init.thrustPercent)
         }
     }
 };
 
 $(document).ready(function() {
     var lastCalc = {};
-    $('#calc').on('click', function() {
+    window.startCalculation = function(sim) {
         var body = window.bodies[$('#body option:selected').val()];
         var timeLimit = Number($('#time').val()) || 600;
         var startSpeed = Number($('#speed').val()) || 0;
         var startAlt = Number($('#alt').val()) || body.defaultStartAlt;
-        var drag = Number($('#drag').val());
-
+        var thrustPercent = Number($('#drag').val()) || 0;
         flight.setBody(body);
-        flight.setInitialConditions(timeLimit, startSpeed, startAlt);
-        var calc = flight.calculate(drag);
+        flight.setInitialConditions({
+            timeLimit: timeLimit,
+            startSpeed: startSpeed,
+            startAlt: startAlt,
+            thrustPercent: thrustPercent,
+            sim: sim
+        });
+        flight.setShipParams({
+            full: $('#full-thrust').val(),
+            empty: $('#empty-thrust').val(),
+            time: $('#thrust-time').val()
+        });
+        var calc = flight.calculate(thrustPercent);
 
-        console.log(calc);
         calc.statusMsg = (calc.status === 'crash')?'Ситуация у поверхности (за 1 сек): ':'Ситуация: ';
 
         calc.statusTitle = (calc.status === 'crash')?'Падение на секунде ' + (Number(calc.time) + 1) + ' (~' + Math.round(calc.time / 60) + ' мин.)':'Падение продолжается на секунде ' + calc.time + ' (~' + Math.round(calc.time / 60) + ' мин.)';
@@ -118,6 +148,9 @@ $(document).ready(function() {
         }});
         $('#flight').html(formattedCalc);
 
+    };
+    $('#calc').on('click', function() {
+        window.startCalculation(true);
     });
 
     $('div.calculation').on('click', 'button#add',function() {
@@ -136,6 +169,7 @@ $(document).ready(function() {
     });
 
     $('div.plan').on('click', 'button.remove', function() {
+        $(this).closest('li').nextAll('li').remove();
         $(this).closest('li').remove();
     });
 
@@ -145,12 +179,33 @@ $(document).ready(function() {
         $('#alt').val(parent.find('input[name="alt"]').val());
         $('#drag').val(parent.find('input[name="drag"]').val());
         $('#time').val(parent.find('input[name="dragTime"]').val());
+        window.startCalculation(false);
+        $(this).closest('li').nextAll('li').remove();
+    });
 
-        $('#calc').trigger('click');
+    $('div.plan').on('click', 'button.sim', function() {
+        var parent = $(this).closest('li');
+        $('#speed').val(parent.find('input[name="speed"]').val());
+        $('#alt').val(parent.find('input[name="alt"]').val());
+        $('#drag').val(parent.find('input[name="drag"]').val());
+        $('#time').val(parent.find('input[name="dragTime"]').val());
+        window.startCalculation(true);
+    });
+
+    $('#reset-ship').on('click', function() {
+        $('#thrust-spent').val('0');
+        flight.ship.timeThrusted = 0;
     });
 
     $('#time').on('change', function() {
         $('#time-in-m').html('сек. (~' + Math.round(Number($(this).val()) / 60) + ' мин)');
-    })
+    });
+
+    $('#body').on('change', function() {
+        var selectedBody = window.bodies[$('#body option:selected').val()];
+        $('#alt').val(selectedBody.defaultStartAlt);
+    });
+
+    $('#body').trigger('change');
 
 });

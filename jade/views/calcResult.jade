@@ -1,23 +1,25 @@
-p Результат - #{data.statusTitle}
-p #{data.statusMsg}
-    br
-    | Высота:
-    input.short#calcAlt(value='#{data.alt}', type="text", readonly="readonly")
-    | м.
-    br
-    |Скорость:
-    input.short#calcSpeed(value='#{data.speed}', type="text", readonly="readonly")
-    | м/сек.
-    br
-    |Время:
-    input.short#calcTime(value='#{data.time}', type="text", readonly="readonly")
-    | м/сек.
-input#nextDrag(placeholder='торможение')
-|м/сек, на
-input#nextDragTime(placeholder='длительность')
-|сек
-input#nextComment(placeholder='Примечание')
-button#add Добавить в план
+div
+    p Результат - #{data.statusTitle}
+    p #{data.statusMsg}
+        br
+        | Высота:
+        input.short#calcAlt(value='#{data.alt}', type="text", readonly="readonly")
+        | м.
+        br
+        | Скорость:
+        input.short#calcSpeed(value='#{data.speed}', type="text", readonly="readonly")
+        | м/сек.
+        br
+        | Время:
+        input.short#calcTime(value='#{data.time}', type="text", readonly="readonly")
+        | м/сек.
+div
+    input#nextDrag(placeholder='торможение')
+    | %<br/>
+    input#nextDragTime(placeholder='длительность')
+    | сек<br/>
+    input#nextComment(placeholder='Примечание')
+    button#add Добавить в план
 
 p.calc-conditions Рассчет для высоты #{init.alt} метров
     br
@@ -31,7 +33,7 @@ p.calc-conditions Рассчет для высоты #{init.alt} метров
     br
     | Торможение:
     input#calcDrag(value='#{data.drag}', type="text", readonly="readonly")
-    |м/сек.
+    |%.
     br
     |Ускорение свободного падения:
     br

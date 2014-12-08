@@ -9,9 +9,10 @@ li.plan-node
         input.short(value='#{data.speed}', name="speed", type="text", readonly="readonly")
     b.nodeDrag Торможение:
     input.short(value='#{data.misc.drag}', name="drag", type="text")
-    |м/с на
+    |% на
     input.short(value='#{data.misc.dragTime}', name="dragTime", type="text")
     | сек
     br
     button.remove Удалить
-    button.set В рассчет
+    button.sim Рассчитать
+    button.set Сохранить
