@@ -1,0 +1,16 @@
+{
+  "name": "template",
+  "version": "0.0.1",
+  "description": "Node.js, jade, websockets",
+  "author": "rainx@inbox.ru",
+  "dependencies": {
+    "jade": ">=0.28.1",
+    "file": ">=0.2.1",
+	"grunt": ">= 0.4.0",
+    "grunt-contrib-jade": ">= 0.4.0",
+    "grunt-contrib-concat": ">= 0.1.1",
+	"grunt-contrib-watch": ">= 0.3.1",
+    "grunt-contrib-compass": ">= 0.2.0"
+  },
+  "engine": "node 0.10.x"
+}

@@ -1,27 +1,37 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<link href="main.css" rel="stylesheet">
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="main.js"></script>
+		<link href="static/css/main.css" rel="stylesheet">
+		<script src="static/js/libs.js"></script>
+		<script src="static/js/templates.js"></script>
+		<script src="static/js/bodies.js"></script>
+		<script src="static/js/main.js"></script>
 	</head>
 	<body>
-		<select id="body">
-			<option value='moho'>Moho (Меркурий)</option>
-			<option value='eve'>Eve (Венера)</option>
-			<option class="child" value='gilly'>--Gilly</option>
-			<option selected="selected" value='kerbin'>Kerbin (Земля)</option>
-			<option class="child" value='mun'>--Mun (Луна)</option>
-			<option class="child" value='minmus'>--Minmus (вторая Луна)</option>
-			<option value='duna'>Duna (Марс)</option>
-			<option class="child" value='ike'>--Ike</option>
+		<div class="calculation">
+			<select id="body">
+				<option value='moho'>Moho (Меркурий)</option>
+				<option value='eve'>Eve (Венера)</option>
+				<option class="child" value='gilly'>--Gilly</option>
+				<option value='kerbin'>Kerbin (Земля)</option>
+				<option class="child" value='mun'>--Mun (Луна)</option>
+				<option class="child" value='minmus'>--Minmus (вторая Луна)</option>
+				<option value='duna'>Duna (Марс)</option>
+				<option selected="selected" class="child" value='ike'>--Ike</option>
 
-		</select><br/>
-		<input placeholder="Стартовая скорость" type="text" id="speed" value=""/><span>м/сек</span><br/>
-		<input placeholder="Высота" type="text" id="alt" value=""/><span>м.</span><br/>
-		<input placeholder="Лимит времени" type="text" id="time" value=""/><span id='time-in-m'>сек.</span><br/>
-		<input placeholder="торможение" type="text" id="drag" value=""/><span>м/сек</span><br/>
-		<button id="ok">Рассчет</button>
-		<p id="flight"></p>
+			</select><br/>
+			<input placeholder="Высота" type="text" id="alt" value=""/><span>м.</span><br/>
+			<input placeholder="Стартовая скорость" type="text" id="speed" value=""/><span>м/сек</span><br/>
+			<input placeholder="Лимит времени" type="text" id="time" value=""/><span id='time-in-m'>сек.</span><br/>
+			<input placeholder="торможение" type="text" id="drag" value=""/><span>м/сек</span><br/>
+			<button id="calc">Рассчитать</button>
+			<input placeholder="точность" maxlength="6" type="text" id="precision" value="1000"/>
+
+			<div id="flight"></div>
+		</div>
+		<div class="plan">
+			<h1>План полета</h1>
+			<ol></ol>
+		</div>
 	</body>
 </html>

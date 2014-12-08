@@ -1,0 +1,17 @@
+.child {
+    padding-left: 6px;
+    background-color: #cbf9ca;
+}
+input.short {
+    max-width: 65px;
+}
+
+.calculation {
+    display: inline-block;
+    float: left;
+    width: 30%;
+}
+.plan {
+    display: inline-block;
+    width: 60%;
+}

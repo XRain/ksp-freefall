@@ -1,0 +1,41 @@
+p Результат - #{data.statusTitle}
+p #{data.statusMsg}
+    br
+    | Высота:
+    input.short#calcAlt(value='#{data.alt}', type="text", readonly="readonly")
+    | м.
+    br
+    |Скорость:
+    input.short#calcSpeed(value='#{data.speed}', type="text", readonly="readonly")
+    | м/сек.
+    br
+    |Время:
+    input.short#calcTime(value='#{data.time}', type="text", readonly="readonly")
+    | м/сек.
+input#nextDrag(placeholder='торможение')
+|м/сек, на
+input#nextDragTime(placeholder='длительность')
+|сек
+input#nextComment(placeholder='Примечание')
+button#add Добавить в план
+
+p.calc-conditions Рассчет для высоты #{init.alt} метров
+    br
+    |Начальная скорость:
+    input(value='#{init.speed}', type="text", readonly="readonly")
+    |м/сек.
+    br
+    | Лимит времени:
+    input(value='#{init.timeLimit}', type="text", readonly="readonly")
+    |сек.
+    br
+    | Торможение:
+    input#calcDrag(value='#{data.drag}', type="text", readonly="readonly")
+    |м/сек.
+    br
+    |Ускорение свободного падения:
+    br
+    input.short(value='#{data.startG}', type="text", readonly="readonly")
+    | м/сек. в начальной точке,
+    input.short(value='#{data.g}', type="text", readonly="readonly")
+    | м/сек. в конечной точке
