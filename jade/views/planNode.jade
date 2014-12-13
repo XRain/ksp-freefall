@@ -1,5 +1,7 @@
 li.plan-node
     b Время:
+    input.short.flight-time(value='#{data.lastTime}', name="last-time", type="text", readonly="readonly")
+    | Интервал:
     input.short(value='#{data.time}', name="time", type="text", readonly="readonly")
     |сек.
     p.notes #{data.misc.note}

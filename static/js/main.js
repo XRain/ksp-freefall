@@ -43,6 +43,7 @@ Flight.prototype.setShipParams = function(params) {
 Flight.prototype.setInitialConditions = function(params) {
     this._reset();
     this.time = 0;
+    this.mpl = params.mpl;
     this.alt = params.startAlt;
     this.surfaceAlt = params.surfaceAlt;
     this.speed = params.startSpeed;
@@ -62,7 +63,7 @@ Flight.prototype.calculate = function(initialBurn) {
                 this.time = (this.init.time - i) + Number(j / this.mpl);
                 var shipThrust = this.ship.thrustToPercent(this.init.thrustPercent, 1 / this.mpl);
                 if(initialBurn) {
-                    this.speed = this.speed + (Number(this.g / this.mpl) / 2);
+                    this.speed = this.speed + (Number(this.g / this.mpl) / 30);
                 } else {
                     this.speed = this.speed + Number(this.g / this.mpl - shipThrust);
                 }
@@ -91,6 +92,7 @@ Flight.prototype._roundResults = function() {
         timeLimit: Number(this.init.time).toFixed(0),
         time: Number(this.time).toFixed(0),
         alt: Number(this.alt).toFixed(4),
+        realAlt: Number(this.alt - this.surfaceAlt).toFixed(4),
         speed: Number(this.speed).toFixed(4),
         drag: Number(this.init.thrustPercent)
     }
@@ -142,6 +144,7 @@ Ship.prototype.thrustToPercent = function(percent, time) {
 
 $(document).ready(function () {
     var lastCalc = {};
+    var currentTime = 0;
     var flight = new Flight();
     flight.ship = new Ship();
     startCalculation = function (sim, initial) {
@@ -151,6 +154,7 @@ $(document).ready(function () {
         var startAlt = Number($('#alt').val()) || body.defaultStartAlt;
         var surfaceAlt = Number($('#start-alt').val()) - Number($('#real-alt').val());
         var thrustPercent = Number($('#drag').val()) || 0;
+        var selectedMpl = Number($('#precision').val()) || 10000;
 
         if(!!initial) {
             timeLimit = $('#thrust-initial').val();
@@ -160,6 +164,7 @@ $(document).ready(function () {
         flight.setBody(body);
         flight.setInitialConditions({
             timeLimit: timeLimit,
+            mpl: selectedMpl,
             startSpeed: startSpeed,
             startAlt: startAlt,
             surfaceAlt: surfaceAlt,
@@ -191,9 +196,11 @@ $(document).ready(function () {
 
     $('#execute-0').on('click', function () {
         startCalculation(false, true);
+        $('#add').trigger('click');
     });
 
     $('div.calculation').on('click', 'button#add',function () {
+        var lastNodeTime = $('.flight-time').last().val();
         lastCalc = {
             alt: $('#calcAlt').val(),
             speed: $('#calcSpeed').val(),
@@ -204,6 +211,13 @@ $(document).ready(function () {
                 note: $('#nextComment').val()
             }
         };
+        if(lastNodeTime !== undefined) {
+            lastCalc.lastTime = Number(lastNodeTime) + Number(lastCalc.time);
+        } else {
+            lastCalc.lastTime = 0;
+        }
+
+
         var planNode = j.planNode({'data': lastCalc});
         $('div.plan ol').append(planNode);
     });

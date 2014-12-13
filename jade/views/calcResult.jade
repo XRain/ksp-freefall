@@ -5,6 +5,11 @@ div
         | Высота:
         input.short#calcAlt(value='#{data.alt}', type="text", readonly="readonly")
         | м.
+
+        br
+        | Высота от поверхности:
+        input.short#calcSurfaceAlt(value='#{data.realAlt}', type="text", readonly="readonly")
+        | м.
         br
         | Скорость:
         input.short#calcSpeed(value='#{data.speed}', type="text", readonly="readonly")
