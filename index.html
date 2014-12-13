@@ -17,14 +17,14 @@
 				<option class="child" value='mun'>--Mun (Луна)</option>
 				<option class="child" value='minmus'>--Minmus (вторая Луна)</option>
 				<option value='duna'>Duna (Марс)</option>
-				<option selected="selected" class="child" value='ike'>--Ike</option>
+				<option class="child" value='ike'>--Ike</option>
 
 			</select>
-			1/<input placeholder="точность рассчета" maxlength="6" type="text" id="precision" value="10000"/>сек<br/>
+			1/<input class="storeable" placeholder="точность рассчета" maxlength="6" type="text" id="precision" value="10000"/>сек<br/>
 			<span>Стартовая ситуация:</span><br />
-			<input placeholder="Начальная высота" type="text" id="start-alt" value=""/><span>м.</span><br/>
-			<input placeholder="Высота от поверхности" type="text" id="real-alt" value=""/><span>м.</span><br/>
-			<span>Тормозной маневр</span><input placeholder="сек" type="text" id="thrust-initial" value="30"/><span>сек</span>
+			<input class="storeable" placeholder="Начальная высота" type="text" id="start-alt" value=""/><span>м.</span><br/>
+			<input class="storeable" placeholder="Высота от поверхности" type="text" id="real-alt" value=""/><span>м.</span><br/>
+			<span>Тормозной маневр</span><input class="storeable" placeholder="сек" type="text" id="thrust-initial" value="30"/><span>сек</span>
 			<button id="execute-0">Выполнить</button><br />
 			<div class="ship-params">
 				<span>Остаток топлива: на</span><input readonly="readonly" type="text" id="thrust-spent" value=""/><span>сек. полной тяги</span><br/>

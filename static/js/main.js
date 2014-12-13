@@ -63,7 +63,7 @@ Flight.prototype.calculate = function(initialBurn) {
                 this.time = (this.init.time - i) + Number(j / this.mpl);
                 var shipThrust = this.ship.thrustToPercent(this.init.thrustPercent, 1 / this.mpl);
                 if(initialBurn) {
-                    this.speed = this.speed + (Number(this.g / this.mpl) / 30);
+                    this.speed = this.speed + (Number(this.g / this.mpl) / 2);
                 } else {
                     this.speed = this.speed + Number(this.g / this.mpl - shipThrust);
                 }
@@ -144,9 +144,23 @@ Ship.prototype.thrustToPercent = function(percent, time) {
 
 $(document).ready(function () {
     var lastCalc = {};
-    var currentTime = 0;
     var flight = new Flight();
     flight.ship = new Ship();
+    if(!!window.localStorage.getItem('body')) {
+        var opt = $('#body').find('option[value="' + window.localStorage.getItem('body') + '"]');
+        opt.attr('selected', 'selected')
+    }
+
+    $('.storeable').each(function() {
+        var inp = $(this);
+        if(!!window.localStorage.getItem(inp.attr('id'))) {
+            inp.val(window.localStorage.getItem(inp.attr('id')));
+        }
+        inp.on('change', function() {
+            window.localStorage.setItem($(this).attr('id'), $(this).val());
+        });
+    });
+
     startCalculation = function (sim, initial) {
         var body = window.bodies[$('#body').find('option:selected').val()];
         var timeLimit = Number($('#time').val()) || 600;
@@ -195,6 +209,7 @@ $(document).ready(function () {
     });
 
     $('#execute-0').on('click', function () {
+        $('#alt').val($('#start-alt').val());
         startCalculation(false, true);
         $('#add').trigger('click');
     });
@@ -260,10 +275,10 @@ $(document).ready(function () {
     });
 
     $('#body').on('change', function () {
-        var selectedBody = window.bodies[$('#body').find('option:selected').val()];
-        $('#start-alt').val(selectedBody.defaultStartAlt);
+        var selectedBodyName = $('#body').find('option:selected').val();
+        var selectedBody = window.bodies[selectedBodyName];
+        window.localStorage.setItem('body', selectedBodyName);
         $('#alt').val(selectedBody.defaultStartAlt);
-        $('#real-alt').val(selectedBody.defaultStartAlt - 2000);
     }).trigger('change');
 
 });
