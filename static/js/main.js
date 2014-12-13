@@ -161,7 +161,18 @@ $(document).ready(function () {
         });
     });
 
-    startCalculation = function (sim, initial) {
+    function calculateShipThrust() {
+        var totalMass = Number($('#ship-mass').val()); //кг
+        var fuelMass = (Number($('#fuel-amount').val()) + Number($('#oxidizer-amount').val())) * 5; //кг
+        var thrust = Number($('#total-thrust').val()) * 1000;
+        var fullAccel = thrust / totalMass;
+        var emptyAccel = thrust / (totalMass - fuelMass);
+        console.log(thrust, totalMass)
+        $('#full-thrust').val(fullAccel);
+        $('#empty-thrust').val(emptyAccel);
+    }
+
+    function startCalculation (sim, initial) {
         var body = window.bodies[$('#body').find('option:selected').val()];
         var timeLimit = Number($('#time').val()) || 600;
         var startSpeed = Number($('#speed').val()) || 0;
@@ -209,6 +220,7 @@ $(document).ready(function () {
     });
 
     $('#execute-0').on('click', function () {
+        calculateShipThrust();
         $('#alt').val($('#start-alt').val());
         startCalculation(false, true);
         $('#add').trigger('click');
@@ -268,10 +280,6 @@ $(document).ready(function () {
     });
     $('#refresh-ship').on('click', function () {
         $('#thrust-spent').val(flight.ship.thrustTime - flight.ship.timeThrusted);
-    });
-
-    $('#begin'). on ('click', function () {
-
     });
 
     $('#body').on('change', function () {

@@ -23,6 +23,6 @@ input.short {
     margin-left: 1px;
     min-height: 800px;
 }
-.flight-params, .ship-params {
+.flight-params, .ship-status {
     display: inline-block;
 }
