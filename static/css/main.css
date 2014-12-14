@@ -6,6 +6,10 @@ input.short {
     max-width: 65px;
 }
 
+.hidden {
+    display:none;
+}
+
 .calculation {
     display: inline-block;
     float: left;
@@ -13,7 +17,7 @@ input.short {
     border: 1px solid black;
     min-height: 800px;
 }
-.calculation div {
+.calculation div, li {
     border-bottom: 1px solid;
 }
 .plan {

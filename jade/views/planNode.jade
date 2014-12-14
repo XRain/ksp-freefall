@@ -6,13 +6,15 @@ li.plan-node
     |сек.
     p.notes #{data.misc.note}
     p Высота:
-        input.short(value='#{data.alt}', name="alt", type="text", readonly="readonly")
+        input.hidden.short(value='#{data.alt}', name="alt", type="text", readonly="readonly")
+        input.hidden.short(value='#{data.fuelConsumed}', name="fuel-consumed", type="text", readonly="readonly")
+        input.short(value='#{data.surfaceAlt}', name="surface-alt", type="text", readonly="readonly")
     p Скорость:
         input.short(value='#{data.speed}', name="speed", type="text", readonly="readonly")
     b.nodeDrag Торможение:
-    input.short(value='#{data.misc.drag}', name="drag", type="text")
+    input.short(name="drag", type="text")
     |% на
-    input.short(value='#{data.misc.dragTime}', name="dragTime", type="text")
+    input.short(name="dragTime", type="text")
     | сек
     br
     button.remove Удалить

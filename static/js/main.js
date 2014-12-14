@@ -21,6 +21,7 @@ Flight.prototype = {
     alt: 0,
     speed: 0,
     time: 0,
+    totalBurned: 0,
     status: '',
     g: 0,
     startG: 0,
@@ -54,6 +55,7 @@ Flight.prototype.setInitialConditions = function(params) {
     this.init.thrustPercent = params.thrustPercent;
 };
 Flight.prototype.calculate = function(initialBurn) {
+    var startShipTime = this.ship.timeThrusted;
     for (var i=this.init.time; i > 0; i--) {
         for (var j=0; j <= this.mpl; j++) {
             if(this.alt - this.speed > this.surfaceAlt) {
@@ -79,6 +81,8 @@ Flight.prototype.calculate = function(initialBurn) {
         }
         j = 0;
     }
+
+    this.totalBurned = this.ship.timeThrusted - startShipTime;
     var timeToShow = (!!this.simulation)?this.ship.simTimeThrusted:this.ship.timeThrusted;
     $('#thrust-spent').val(Number(this.ship.thrustTime - timeToShow).toFixed(1));
     this.simulation = true;
@@ -87,18 +91,20 @@ Flight.prototype.calculate = function(initialBurn) {
 Flight.prototype._roundResults = function() {
     return {
         status: this.status,
-        g: Number(this.g).toFixed(4),
-        startG: Number(this.startG).toFixed(4),
-        timeLimit: Number(this.init.time).toFixed(0),
-        time: Number(this.time).toFixed(0),
-        alt: Number(this.alt).toFixed(4),
-        realAlt: Number(this.alt - this.surfaceAlt).toFixed(4),
-        speed: Number(this.speed).toFixed(4),
+        g: Number(this.g).toFixed(8),
+        startG: Number(this.startG).toFixed(8),
+        timeLimit: Number(this.init.time).toFixed(8),
+        time: Number(this.time).toFixed(8),
+        alt: Number(this.alt).toFixed(8),
+        realAlt: Number(this.alt - this.surfaceAlt).toFixed(8),
+        speed: Number(this.speed).toFixed(8),
+        totalBurned: Number(this.totalBurned).toFixed(8),
         drag: Number(this.init.thrustPercent)
     }
 };
 Flight.prototype._reset = function() {
     this.status = 'flight';
+    this.totalBurned = 0;
     this.g =  0; // m/s
     this.startG = 0;// m/s
     this.time = 0; // s
@@ -167,7 +173,6 @@ $(document).ready(function () {
         var thrust = Number($('#total-thrust').val()) * 1000;
         var fullAccel = thrust / totalMass;
         var emptyAccel = thrust / (totalMass - fuelMass);
-        console.log(thrust, totalMass)
         $('#full-thrust').val(fullAccel);
         $('#empty-thrust').val(emptyAccel);
     }
@@ -206,56 +211,67 @@ $(document).ready(function () {
         calc.statusMsg = (calc.status === 'crash')?'Ситуация у поверхности (за 1 сек): ':'Ситуация: ';
 
         calc.statusTitle = (calc.status === 'crash')?'Падение на секунде ' + (Number(calc.time) + 1) + ' (~' + Math.round(calc.time / 60) + ' мин.)':'Падение продолжается на секунде ' + calc.time + ' (~' + Math.round(calc.time / 60) + ' мин.)';
-
-        var formattedCalc = j.calcResult({'data': calc, 'init': {
+        var calcData = {'data': calc, 'init': {
             alt: startAlt,
             speed: startSpeed,
             timeLimit: timeLimit
-        }});
+        }};
+        var formattedCalc = j.calcResult(calcData);
+        var formattedStat = j.calcStat(calcData);
         $('#flight').html(formattedCalc);
+        $('#flight-stat').html(formattedStat);
 
+        if (!sim) {
+            setTimeout(function(){
+                $('.sim').last().trigger('click');
+            }, 100)
+        }
     };
     $('#calc').on('click', function () {
         startCalculation(true);
     });
 
     $('#execute-0').on('click', function () {
-        calculateShipThrust();
         $('#alt').val($('#start-alt').val());
+        $('#speed').val($('#start-speed').val());
+        $('.calculation-details').removeClass('hidden');
+        calculateShipThrust();
         startCalculation(false, true);
         $('#add').trigger('click');
     });
 
-    $('div.calculation').on('click', 'button#add',function () {
+    $('div#flight').on('click', 'button#add',function () {
         var lastNodeTime = $('.flight-time').last().val();
         lastCalc = {
             alt: $('#calcAlt').val(),
+            surfaceAlt: $('#calcSurfaceAlt').val(),
             speed: $('#calcSpeed').val(),
             time: $('#calcTime').val(),
+            fuelConsumed: $('#calcTotalBurned').val(),
             misc: {
-                drag: $('#nextDrag').val(),
-                dragTime: $('#nextDragTime').val(),
                 note: $('#nextComment').val()
             }
         };
         if(lastNodeTime !== undefined) {
             lastCalc.lastTime = Number(lastNodeTime) + Number(lastCalc.time);
         } else {
-            lastCalc.lastTime = 0;
+            lastCalc.lastTime = $('#thrust-initial').val();
         }
-
-
         var planNode = j.planNode({'data': lastCalc});
         $('div.plan ol').append(planNode);
     });
 
     $('div.plan').on('click', 'button.remove', function () {
-        $(this).closest('li').nextAll('li').remove();
-        $(this).closest('li').remove();
+        var parent = $(this).closest('li');
+        flight.ship.timeThrusted -= Number(parent.find('input[name="fuel-consumed"]').val());
+        $('#refresh-ship').trigger('click');
+        parent.remove();
+        $('div.plan').find('button.remove').last().removeClass('hidden')
     });
 
     $('div.plan').on('click', 'button.set', function () {
         var parent = $(this).closest('li');
+        parent.find('button.remove').addClass('hidden');
         $('#speed').val(parent.find('input[name="speed"]').val());
         $('#alt').val(parent.find('input[name="alt"]').val());
         $('#drag').val(parent.find('input[name="drag"]').val());

@@ -24,6 +24,7 @@
 			<span>Стартовая ситуация:</span><br />
 			<input class="storeable" placeholder="Начальная высота" type="text" id="start-alt" value=""/><span>м.</span><br/>
 			<input class="storeable" placeholder="Высота от поверхности" type="text" id="real-alt" value=""/><span>м.</span><br/>
+			<input class="storeable" placeholder="Стартовая скорость" type="text" id="start-speed" value=""/><span>м/сек</span><br/>
 			<span>Параметры корабля:</span><br/>
 			<input class="storeable" placeholder="Общая масса" type="text" id="ship-mass" value=""/>кг.<br/>
 			<input class="storeable" placeholder="топливо" type="text" id="fuel-amount" value=""/>ед.<br/>
@@ -32,28 +33,30 @@
 			<input class="storeable" placeholder="Время работы двигателей" type="text" id="thrust-time" value="120"/>сек.<br/>
 			<span>Тормозной маневр</span><input class="storeable" placeholder="сек" type="text" id="thrust-initial" value="30"/><span>сек</span>
 			<button id="execute-0">Начать рассчет</button><br />
-			<div class="ship-status">
-				<span>Состояние корабля</span><br />
-				<span>Остаток топлива: на</span><input readonly="readonly" type="text" id="thrust-spent" value=""/><span>сек. полной тяги</span>
-				<button id="refresh-ship">Обновить</button>
-				<button id="reset-ship">Сбросить</button><br />
-				<input placeholder="тяга с полными баками" type="text" id="full-thrust" value=""/><br/>
-				<input placeholder="тяга с пустыми баками" type="text" id="empty-thrust" value=""/><br/>
-			</div>
-			<button id="calc">Рассчитать</button><br />
-			<div class="flight-params">
-				<input placeholder="Высота" type="text" id="alt" value=""/><span>м.</span><br/>
-				<input placeholder="Стартовая скорость" type="text" id="speed" value=""/><span>м/сек</span><br/>
-				<input placeholder="Лимит времени" type="text" id="time" value=""/><span id='time-in-m'>сек.</span><br/>
-				<input placeholder="торможение" type="text" id="drag" value=""/><span>%тяги</span><br/>
-			</div>
+			<div class="calculation-details hidden">
+				<div class="ship-status">
+					<span>Состояние корабля</span><br />
+					<span>Остаток топлива: на</span><input readonly="readonly" type="text" id="thrust-spent" value=""/><span>сек. полной тяги</span>
+					<button id="refresh-ship">Обновить</button>
+					<button id="reset-ship">Сбросить</button><br />
+					<input placeholder="тяга с полными баками" type="text" id="full-thrust" value=""/><br/>
+					<input placeholder="тяга с пустыми баками" type="text" id="empty-thrust" value=""/><br/>
+				</div>
+				<button id="calc">Рассчитать</button><br />
+				<div class="flight-params">
+					<input placeholder="Скорость" type="text" id="speed" value=""/><span>м/сек</span><br/>
+					<input placeholder="Высота" type="text" id="alt" value=""/><span>м.</span><br/>
+					<input placeholder="Лимит времени" type="text" id="time" value=""/><span id='time-in-m'>сек.</span><br/>
+					<input placeholder="торможение" type="text" id="drag" value=""/><span>%тяги</span><br/>
+				</div>
 
-
-			<div id="flight"></div>
+				<div id="flight-stat"></div>
+			</div>
 		</div>
 		<div class="plan">
 			<h1>План полета</h1>
 			<ol></ol>
+			<div id="flight"></div>
 		</div>
 	</body>
 </html>
