@@ -1,3 +1,39 @@
+function Ship() {
+    if (this instanceof Ship) {
+        return this;
+    } else {
+        return new Ship();
+    }
+}
+
+//ship thrust params
+Ship.prototype = {
+    currentThrust: 0,
+    mpl:0,
+    sim: 0,
+    fullShipThrust: 0,
+    emptyShipThrust: 0,
+    thrustTime: 0, //seconds
+    thrustChangePerSec: 0,
+    timeThrusted: 0,
+    simTimeThrusted: 0
+};
+Ship.prototype.thrustToPercent = function(percent, time) {
+    if (percent > 0 && this.timeThrusted < this.thrustTime) {
+        this.simTimeThrusted += (time / 100) * percent;
+
+        this.currentThrust = this.fullShipThrust + (this.simTimeThrusted * (this.thrustChangePerSec));
+        var actualThrustPerSec = (this.currentThrust / 100) * percent;
+
+        if(this.simulation == false) {
+            this.timeThrusted += (time / 100) * percent;
+        }
+        return actualThrustPerSec / this.mpl;
+    } else {
+        return 0;
+    }
+};
+
 function Flight() {
     if (this instanceof Flight) {
         return this;
@@ -65,9 +101,10 @@ Flight.prototype.calculate = function(initialBurn) {
                 this.time = (this.init.time - i) + Number(j / this.mpl);
                 var shipThrust = this.ship.thrustToPercent(this.init.thrustPercent, 1 / this.mpl);
                 if(initialBurn) {
-                    this.speed = this.speed + (Number(this.g / this.mpl) / 2);
+                    var thrustRatio = this.ship.timeThrusted / this.init.time;
+                    this.speed += Number(this.g / this.mpl) * thrustRatio;
                 } else {
-                    this.speed = this.speed + Number(this.g / this.mpl - shipThrust);
+                    this.speed += Number(this.g / this.mpl - shipThrust);
                 }
                 this.alt = this.alt - (this.speed / this.mpl);
 
@@ -112,41 +149,6 @@ Flight.prototype._reset = function() {
     this.speed = 0; // m/s
 };
 
-function Ship() {
-    if (this instanceof Ship) {
-        return this;
-    } else {
-        return new Ship();
-    }
-}
-
-//ship thrust params
-Ship.prototype = {
-    currentThrust: 0,
-        mpl:0,
-        sim: 0,
-        fullShipThrust: 0,
-        emptyShipThrust: 0,
-        thrustTime: 0, //seconds
-        thrustChangePerSec: 0,
-        timeThrusted: 0,
-        simTimeThrusted: 0
-};
-Ship.prototype.thrustToPercent = function(percent, time) {
-    if (percent > 0 && this.timeThrusted < this.thrustTime) {
-        this.simTimeThrusted += (time / 100) * percent;
-
-        this.currentThrust = this.fullShipThrust + (this.simTimeThrusted * (this.thrustChangePerSec));
-        var actualThrustPerSec = (this.currentThrust / 100) * percent;
-
-        if(this.simulation == false) {
-            this.timeThrusted += (time / 100) * percent;
-        }
-        return actualThrustPerSec / this.mpl;
-    } else {
-        return 0;
-    }
-};
 
 $(document).ready(function () {
     var lastCalc = {};
